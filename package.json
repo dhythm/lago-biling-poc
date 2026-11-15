@@ -9,6 +9,7 @@
     "lago:down": "docker compose --project-directory lago down",
     "lago:reset": "docker compose --project-directory lago down -v",
     "simulate": "node --env-file=lago/.env src/main.ts",
+    "web": "node src/serve.ts",
     "probe": "node --env-file=lago/.env src/probe.ts"
   }
 }

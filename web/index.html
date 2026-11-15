@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>料金プラン比較</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --flat: #2a78d6; --payg: #eb6834; --prepaid: #1baf7a;
+    --good: #0ca30c; --critical: #d03b3b; --accent-wash: rgba(42,120,214,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --flat: #3987e5; --payg: #d95926; --prepaid: #199e70;
+      --accent-wash: rgba(57,135,229,0.16);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", "Hiragino Sans", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 0 0 4px; }
+  .lede, .hint { color: var(--ink-2); margin: 0; }
+  .hint { font-size: 13px; }
+  section { margin-top: 40px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 16px; }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px; }
+  .control label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-weight: 600; }
+  .control output { font-variant-numeric: tabular-nums; font-weight: 400; color: var(--ink-2); }
+  input[type=range] { width: 100%; margin: 8px 0 0; accent-color: var(--flat); }
+  .presets { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .presets span { color: var(--ink-2); font-size: 13px; }
+  button { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--axis);
+    border-radius: 8px; padding: 4px 12px; cursor: pointer; }
+  button:hover { background: var(--accent-wash); }
+  button[aria-pressed=true] { border-color: var(--flat); background: var(--accent-wash); }
+  :focus-visible { outline: 2px solid var(--flat); outline-offset: 2px; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+  .card.best { border-color: var(--ink-2); box-shadow: 0 0 0 1px var(--ink-2); }
+  .card header { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+  .badge { margin-left: auto; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid var(--ink-2); color: var(--ink); }
+  .hero { font-size: 32px; font-weight: 650; line-height: 1.2; margin: 8px 0 2px; }
+  .card .hint { min-height: 1.6em; }
+  dl { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; margin: 12px 0 0; font-size: 13px; }
+  dt { color: var(--ink-2); } dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  dl .total { border-top: 1px solid var(--grid); padding-top: 4px; margin-top: 4px; color: var(--ink); font-weight: 600; }
+
+  .chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; }
+  .legend { display: flex; gap: 16px; font-size: 13px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .chart-wrap { position: relative; margin-top: 8px; overflow-x: auto; }
+  #chart { display: block; width: 100%; min-width: 640px; height: auto; }
+  svg text { fill: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  svg .series-label { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    white-space: nowrap; display: none; }
+  .tooltip b { display: block; margin-bottom: 4px; }
+  .tooltip div { display: flex; align-items: center; gap: 8px; }
+  .tooltip div span:last-child { margin-left: auto; padding-left: 16px; font-variant-numeric: tabular-nums; }
+
+  details { margin-top: 12px; } summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
+  .table-scroll { overflow-x: auto; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--grid); text-align: right; white-space: nowrap;
+    font-variant-numeric: tabular-nums; }
+  th { color: var(--ink-2); font-weight: 600; }
+  th:first-child, td:first-child, td.text, th.text { text-align: left; }
+  tr.group-start td { border-top: 2px solid var(--axis); }
+  td.best { font-weight: 700; }
+  .status { display: inline-flex; align-items: center; gap: 4px; }
+  .status svg { width: 14px; height: 14px; }
+  .notice { border-left: 3px solid var(--axis); padding: 8px 12px; color: var(--ink-2); background: var(--surface); margin-top: 16px; }
+  .notice.error { border-left-color: var(--critical); color: var(--ink); }
+
+  @media (max-width: 760px) {
+    .controls, .cards { grid-template-columns: 1fr; }
+    .hero { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>料金プラン比較</h1>
+  <p class="lede">同じ利用量に、月額固定・従量課金・前払いクレジットの3プランを当てたときの支払総額を比べます。</p>
+  <p class="hint">この画面は Lago にも外部サービスにも接続しません。上段はこの PC 内の計算、下段は保存済みの実行結果です。</p>
+  <div id="error" class="notice error" role="alert" hidden></div>
+
+  <section aria-labelledby="sim-title">
+    <h2 id="sim-title">利用量を動かして比べる</h2>
+    <p class="hint">金額は当月の支払総額(税込)。前払いクレジットは購入額 + 残高で足りなかった分です。</p>
+
+    <div class="panel controls">
+      <div class="control">
+        <label for="calls">API呼び出し <output id="calls-out"></output></label>
+        <input id="calls" type="range" min="0" max="10000" step="50" value="1500">
+      </div>
+      <div class="control">
+        <label for="tpc">1件あたりのトークン <output id="tpc-out"></output></label>
+        <input id="tpc" type="range" min="0" max="4000" step="50" value="1600">
+      </div>
+      <div class="presets" id="presets"><span>顧客像から選ぶ</span></div>
+    </div>
+
+    <div class="cards" id="cards" aria-live="polite"></div>
+
+    <div class="panel">
+      <div class="chart-head">
+        <div>
+          <strong>API呼び出し数と支払総額</strong>
+          <p class="hint" id="chart-sub"></p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 960 360" role="img" aria-labelledby="chart-desc"></svg>
+        <p id="chart-desc" hidden></p>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+      <details>
+        <summary>表で見る</summary>
+        <div class="table-scroll"><table id="curve-table"></table></div>
+      </details>
+    </div>
+  </section>
+
+  <section aria-labelledby="lago-title">
+    <h2 id="lago-title">Lago の実測結果</h2>
+    <p class="hint" id="lago-sub">Lago が実際に発行した請求書と、独自計算の期待値との照合です。</p>
+    <div id="lago"></div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const PLANS = [
+  { key: "flat", name: "月額固定", color: "var(--flat)" },
+  { key: "payg", name: "従量課金", color: "var(--payg)" },
+  { key: "prepaid", name: "前払いクレジット", color: "var(--prepaid)" },
+];
+const MAX_CALLS = 10000, CURVE_POINTS = 101;
+const SVG_NS = "http://www.w3.org/2000/svg";
+const yen = (n) => "¥" + Math.round(n).toLocaleString("ja-JP");
+const num = (n) => Math.round(n).toLocaleString("ja-JP");
+const $ = (id) => document.getElementById(id);
+
+// innerHTML を使わずに要素を組み立てる(表示するデータをそのまま HTML として解釈させない)
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") el.className = v;
+    else if (k === "style") el.style.cssText = v;
+    else if (v !== false && v != null) el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of children.flat()) if (c != null) el.append(c);
+  return el;
+}
+function s(tag, attrs, text) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v);
+  if (text != null) el.textContent = text;
+  return el;
+}
+const swatch = (color) => h("span", { class: "swatch", style: `background:${color}` });
+
+function showError(message) {
+  const box = $("error");
+  box.textContent = message;
+  box.hidden = !message;
+}
+async function getJson(path) {
+  let res;
+  try {
+    res = await fetch(path);
+  } catch {
+    throw new Error("サーバーに接続できません。npm run web が動いているか確認してください");
+  }
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(body.error || `読み込みに失敗しました (HTTP ${res.status})`), { status: res.status });
+  return body;
+}
+
+// ---- 上段: 利用量を動かして比べる ----
+const state = { calls: 1500, tpc: 1600, curve: [], quote: null, profiles: [] };
+let quoteSeq = 0, curveSeq = 0;
+
+function renderCards() {
+  const q = state.quote;
+  if (!q) return;
+  const cards = PLANS.map((plan) => {
+    const quote = q.quotes.find((x) => x.plan === plan.key);
+    const inv = quote.invoice;
+    const best = q.cheapest === plan.key;
+    const rows = [
+      ["基本料", yen(inv.baseFee)],
+      ["API呼び出し料金", yen(inv.fees.apiCalls)],
+      ["トークン料金", yen(inv.fees.tokens)],
+      ["消費税", yen(inv.tax)],
+    ];
+    if (plan.key === "prepaid") {
+      rows.push(["クレジット充当", "−" + yen(inv.prepaidApplied)], ["クレジット購入", yen(quote.creditPurchase)]);
+    }
+    const note = plan.key === "prepaid" ? `使い残しのクレジット ${yen(quote.walletRemaining)}` : "";
+    return h("article", { class: "card" + (best ? " best" : "") },
+      h("header", {}, swatch(plan.color), plan.name, best ? h("span", { class: "badge" }, "最安") : null),
+      h("div", { class: "hero" }, yen(quote.cashOut)),
+      h("p", { class: "hint" }, note),
+      h("dl", {},
+        rows.flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, v)]),
+        h("dt", { class: "total" }, "支払総額"), h("dd", { class: "total" }, yen(quote.cashOut))),
+    );
+  });
+  $("cards").replaceChildren(...cards);
+}
+
+const CH = { w: 960, h: 360, l: 64, r: 132, t: 16, b: 40 };
+function niceMax(v) {
+  const pow = 10 ** Math.floor(Math.log10(Math.max(v, 1)));
+  return [1, 2, 2.5, 5, 10].map((m) => m * pow).find((m) => m >= v);
+}
+function renderChart() {
+  const svg = $("chart");
+  const curve = state.curve;
+  if (curve.length === 0) return;
+  const yMax = niceMax(Math.max(...curve.flatMap((p) => PLANS.map((pl) => p[pl.key]))));
+  const x = (v) => CH.l + (v / MAX_CALLS) * (CH.w - CH.l - CH.r);
+  const y = (v) => CH.h - CH.b - (v / yMax) * (CH.h - CH.t - CH.b);
+  const nodes = [];
+
+  for (let i = 0; i <= 4; i++) {
+    const v = (yMax * i) / 4;
+    nodes.push(s("line", { x1: CH.l, x2: CH.w - CH.r, y1: y(v), y2: y(v), stroke: i === 0 ? "var(--axis)" : "var(--grid)", "stroke-width": 1 }));
+    nodes.push(s("text", { x: CH.l - 8, y: y(v) + 4, "text-anchor": "end" }, yen(v)));
+  }
+  for (let v = 0; v <= MAX_CALLS; v += 2000) {
+    nodes.push(s("text", { x: x(v), y: CH.h - CH.b + 18, "text-anchor": "middle" }, num(v)));
+  }
+  nodes.push(s("text", { x: (CH.l + CH.w - CH.r) / 2, y: CH.h - 4, "text-anchor": "middle" }, "API呼び出し(件)"));
+
+  for (const plan of PLANS) {
+    const d = curve.map((p, i) => `${i ? "L" : "M"}${x(p.apiCalls).toFixed(1)},${y(p[plan.key]).toFixed(1)}`).join("");
+    nodes.push(s("path", { d, fill: "none", stroke: plan.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+  }
+
+  // 線の右端に直接ラベル。重なる場合は上下にずらす
+  const last = curve[curve.length - 1];
+  const labels = PLANS.map((plan) => ({ plan, y: y(last[plan.key]) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 16);
+  const overflow = labels[labels.length - 1].y - (CH.h - CH.b);
+  if (overflow > 0) labels.forEach((l) => (l.y -= overflow));
+  for (const l of labels) {
+    nodes.push(s("text", { class: "series-label", x: CH.w - CH.r + 10, y: l.y + 4 }, l.plan.name));
+  }
+
+  // 現在の利用量
+  if (state.quote) {
+    const cx = x(Math.min(state.calls, MAX_CALLS));
+    nodes.push(s("line", { x1: cx, x2: cx, y1: CH.t, y2: CH.h - CH.b, stroke: "var(--ink-2)", "stroke-width": 1, "stroke-dasharray": "4 4" }));
+    for (const plan of PLANS) {
+      const v = state.quote.quotes.find((q) => q.plan === plan.key).cashOut;
+      nodes.push(s("circle", { cx, cy: y(Math.min(v, yMax)), r: 5, fill: plan.color, stroke: "var(--surface)", "stroke-width": 2 }));
+    }
+  }
+  const hover = s("g", { id: "hover", visibility: "hidden" });
+  hover.append(s("line", { id: "hover-line", y1: CH.t, y2: CH.h - CH.b, stroke: "var(--axis)", "stroke-width": 1 }));
+  for (const plan of PLANS) hover.append(s("circle", { "data-plan": plan.key, r: 4, fill: plan.color, stroke: "var(--surface)", "stroke-width": 2 }));
+  nodes.push(hover);
+  nodes.push(s("rect", { id: "hit", x: CH.l, y: CH.t, width: CH.w - CH.l - CH.r, height: CH.h - CH.t - CH.b, fill: "transparent" }));
+  svg.replaceChildren(...nodes);
+  svg._scale = { x, y };
+
+  $("chart-sub").textContent = `1件あたり ${num(state.tpc)} トークンの場合。点線が現在の利用量です。`;
+  $("chart-desc").textContent = `API呼び出し 0〜${num(MAX_CALLS)} 件での3プランの支払総額。${num(MAX_CALLS)} 件では ` +
+    PLANS.map((p) => `${p.name} ${yen(last[p.key])}`).join("、") + "。";
+
+  const step = 10;
+  $("curve-table").replaceChildren(
+    h("thead", {}, h("tr", {}, h("th", {}, "API呼び出し"), h("th", {}, "トークン"), PLANS.map((p) => h("th", {}, p.name)))),
+    h("tbody", {}, curve.filter((_, i) => i % step === 0).map((p) => {
+      const min = Math.min(...PLANS.map((pl) => p[pl.key]));
+      return h("tr", {}, h("td", {}, num(p.apiCalls)), h("td", {}, num(p.tokens)),
+        PLANS.map((pl) => h("td", { class: p[pl.key] === min ? "best" : "" }, yen(p[pl.key]))));
+    })),
+  );
+}
+
+function onHover(ev) {
+  const svg = $("chart"), tip = $("tooltip"), hover = $("hover");
+  if (!svg._scale || !hover) return;
+  const rect = svg.getBoundingClientRect();
+  const px = ((ev.clientX - rect.left) / rect.width) * CH.w;
+  const ratio = (px - CH.l) / (CH.w - CH.l - CH.r);
+  if (ratio < 0 || ratio > 1) return hideHover();
+  const p = state.curve[Math.round(ratio * (state.curve.length - 1))];
+  const cx = svg._scale.x(p.apiCalls);
+  hover.setAttribute("visibility", "visible");
+  const line = $("hover-line");
+  line.setAttribute("x1", cx); line.setAttribute("x2", cx);
+  for (const c of hover.querySelectorAll("circle")) {
+    c.setAttribute("cx", cx); c.setAttribute("cy", svg._scale.y(p[c.dataset.plan]));
+  }
+  const min = Math.min(...PLANS.map((pl) => p[pl.key]));
+  tip.replaceChildren(
+    h("b", {}, `${num(p.apiCalls)} 件 / ${num(p.tokens)} トークン`),
+    ...PLANS.map((pl) => h("div", {}, swatch(pl.color), h("span", {}, pl.name + (p[pl.key] === min ? "(最安)" : "")), h("span", {}, yen(p[pl.key])))),
+  );
+  tip.style.display = "block";
+  const wrap = svg.parentElement.getBoundingClientRect();
+  const left = (cx / CH.w) * rect.width;
+  const flip = left + tip.offsetWidth + 24 > wrap.width;
+  tip.style.left = (flip ? left - tip.offsetWidth - 12 : left + 12) + "px";
+  tip.style.top = "8px";
+}
+function hideHover() {
+  $("tooltip").style.display = "none";
+  $("hover")?.setAttribute("visibility", "hidden");
+}
+
+async function refreshQuote() {
+  const seq = ++quoteSeq;
+  const tokens = Math.round(state.calls * state.tpc);
+  try {
+    const quote = await getJson(`/api/quote?apiCalls=${state.calls}&tokens=${tokens}`);
+    if (seq !== quoteSeq) return; // 古い応答で新しい表示を上書きしない
+    state.quote = quote;
+    showError("");
+    renderCards();
+    renderChart();
+  } catch (e) {
+    if (seq === quoteSeq) showError(e.message);
+  }
+}
+async function refreshCurve() {
+  const seq = ++curveSeq;
+  try {
+    const { curve } = await getJson(`/api/curve?tokensPerCall=${state.tpc}&maxCalls=${MAX_CALLS}&points=${CURVE_POINTS}`);
+    if (seq !== curveSeq) return;
+    state.curve = curve;
+    renderChart();
+  } catch (e) {
+    if (seq === curveSeq) showError(e.message);
+  }
+}
+function syncControls() {
+  $("calls").value = state.calls; $("tpc").value = state.tpc;
+  $("calls-out").textContent = `${num(state.calls)} 件`;
+  $("tpc-out").textContent = `${num(state.tpc)} トークン(合計 ${num(state.calls * state.tpc)})`;
+  for (const b of $("presets").querySelectorAll("button")) {
+    const p = state.profiles.find((x) => x.code === b.dataset.code);
+    b.setAttribute("aria-pressed", String(p.apiCalls === state.calls && p.avgTokensPerCall === state.tpc));
+  }
+}
+function setUsage(calls, tpc) {
+  const tpcChanged = tpc !== state.tpc;
+  state.calls = calls; state.tpc = tpc;
+  syncControls();
+  refreshQuote();
+  if (tpcChanged) refreshCurve();
+}
+
+// ---- 下段: Lago の実測結果 ----
+function statusIcon(ok) {
+  const svg = s("svg", { viewBox: "0 0 16 16", "aria-hidden": "true" });
+  svg.append(s("circle", { cx: 8, cy: 8, r: 7, fill: ok ? "var(--good)" : "var(--critical)" }));
+  svg.append(s("path", { d: ok ? "M4.5 8.2l2.3 2.3 4.7-4.9" : "M5 5l6 6M11 5l-6 6", fill: "none", stroke: "#fff", "stroke-width": 1.8, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+  return svg;
+}
+function renderLago(data) {
+  const results = Array.isArray(data.results) ? data.results : [];
+  if (results.length === 0) {
+    $("lago").replaceChildren(h("p", { class: "notice" }, "実行結果にケースが含まれていません。"));
+    return;
+  }
+  const matched = results.filter((r) => r.diffs.length === 0).length;
+  $("lago-sub").textContent = `実行 ${data.runId}。Lago が発行した請求書 ${results.length} 件のうち ${matched} 件が、独自計算の期待値と一致しています。`;
+  const head = ["顧客", "プラン", "請求書", "API呼び出し", "トークン", "小計", "消費税", "クレジット充当", "請求額", "支払総額", "期待値との照合"];
+  const textCols = new Set([0, 1, 2, 10]);
+  let prev = null;
+  const rows = results.map((r) => {
+    const min = Math.min(...results.filter((x) => x.profile === r.profile).map((x) => x.cashOut));
+    const ok = r.diffs.length === 0;
+    const verdict = h("span", { class: "status" }, statusIcon(ok),
+      ok ? "一致" : "不一致: " + r.diffs.map((d) => `${d.field} 期待 ${num(d.expected)} / 実際 ${num(d.actual)}`).join("、"));
+    const plan = PLANS.find((p) => p.key === r.plan);
+    const cells = [
+      r.profile === prev ? "" : r.profileName,
+      h("span", { class: "status" }, swatch(plan ? plan.color : "var(--muted)"), r.planName),
+      r.invoiceNumber, num(r.actual.units.apiCalls), num(r.actual.units.tokens), yen(r.actual.subtotal), yen(r.actual.tax),
+      yen(r.actual.prepaidApplied), yen(r.actual.amountDue), yen(r.cashOut) + (r.cashOut === min ? "(最安)" : ""), verdict,
+    ];
+    const tr = h("tr", { class: r.profile === prev ? "" : "group-start" },
+      cells.map((c, i) => h("td", { class: [textCols.has(i) ? "text" : "", i === 9 && r.cashOut === min ? "best" : ""].join(" ").trim() }, c)));
+    prev = r.profile;
+    return tr;
+  });
+  $("lago").replaceChildren(h("div", { class: "panel table-scroll" },
+    h("table", {}, h("thead", {}, h("tr", {}, head.map((t, i) => h("th", { class: textCols.has(i) ? "text" : "" }, t)))), h("tbody", {}, rows))));
+}
+
+async function init() {
+  $("legend").replaceChildren(...PLANS.map((p) => h("span", {}, swatch(p.color), p.name)));
+  $("calls").addEventListener("input", (e) => setUsage(Number(e.target.value), state.tpc));
+  $("tpc").addEventListener("input", (e) => setUsage(state.calls, Number(e.target.value)));
+  $("chart").addEventListener("pointermove", onHover);
+  $("chart").addEventListener("pointerleave", hideHover);
+
+  try {
+    const scenario = await getJson("/api/scenario");
+    state.profiles = scenario.profiles;
+    for (const p of scenario.profiles) {
+      const b = h("button", { type: "button", "data-code": p.code, "aria-pressed": "false" }, p.name);
+      b.addEventListener("click", () => setUsage(p.apiCalls, p.avgTokensPerCall));
+      $("presets").append(b);
+    }
+  } catch (e) {
+    showError(e.message);
+  }
+  syncControls();
+  refreshQuote();
+  refreshCurve();
+
+  try {
+    renderLago(await getJson("/api/result"));
+  } catch (e) {
+    $("lago").replaceChildren(h("p", { class: "notice" + (e.status === 404 ? "" : " error") }, e.message));
+  }
+}
+init();
+</script>
+</body>
+</html>

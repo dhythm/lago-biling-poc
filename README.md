@@ -94,6 +94,20 @@ npm run simulate
 - PDF 生成は無効にしており、PDF 用コンテナは起動しない。
 - `npm run simulate` は実行ごとに新しい顧客を9件作る。1回あたり5分前後(ほぼイベント集計の待ち時間)。
 - `npm run probe` は下記所見の裏付けに使った追加検証。
+### 比較画面(Lago なしで動く)
+
+```bash
+npm run web
+```
+
+http://localhost:4310 で開く。`lago/.env` も Lago の起動も不要で、外部には一切接続しない。
+
+- **上段**: API呼び出し数と1件あたりのトークン数をスライダーで動かすと、3プランの支払総額・内訳・最安プランと、
+  利用量に対する支払総額のグラフがその場で変わる。計算は [src/pricing.ts](src/pricing.ts) をそのまま使う。
+- **下段**: `npm run simulate` が保存した [out/result.json](out/result.json)(Lago の実測結果と期待値の照合)を表示する。
+  このファイルはリポジトリに含めてあるので、clone 直後でも表示できる。無い場合は案内文だけが出る。
+- ポートは `PORT=5000 npm run web` のように変えられる。自分の PC からだけ見える(`127.0.0.1` で待ち受け)。
+
 - 片付けは `npm run lago:down`、データごと消すなら `npm run lago:reset`。
 
 ### 即時に請求書を得る方法
@@ -150,3 +164,6 @@ Lago は請求日に時計ジョブが請求書を作る。待たずに1期間�
 | [src/compare.ts](src/compare.ts) | 請求書の正規化と期待値との差分 |
 | [src/main.ts](src/main.ts) | 通し実行 |
 | [src/probe.ts](src/probe.ts) | 所見の裏付け用の追加検証 |
+| [src/quote.ts](src/quote.ts) | 画面用の見積もり(3プラン比較・曲線・入力検証) |
+| [src/server.ts](src/server.ts) / [src/serve.ts](src/serve.ts) | 比較画面用のローカルサーバーと起動 |
+| [web/index.html](web/index.html) | 比較画面 |
