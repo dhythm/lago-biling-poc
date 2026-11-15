@@ -36,7 +36,46 @@
 
 ## 動かし方
 
-Docker と Node.js 24 以上が必要。npm 依存はない。
+Docker と Node.js 24 以上、`openssl` が必要。npm 依存はない。
+
+### 1. `lago/.env` を生成する(初回のみ)
+
+`lago/.env` には API キーやパスワードが入るため、リポジトリには含めていない。
+リポジトリのルートで次を実行すると、秘密の値をすべて乱数で生成して書き出す。
+
+```bash
+(umask 077 && cat > lago/.env <<EOF
+# ローカルPoC専用。自動生成された値。コミットしないこと。
+API_PORT=3100
+FRONT_PORT=8088
+POSTGRES_PORT=5442
+REDIS_PORT=6389
+LAGO_API_URL=http://localhost:3100
+LAGO_FRONT_URL=http://localhost:8088
+POSTGRES_PASSWORD=$(openssl rand -hex 16)
+SECRET_KEY_BASE=$(openssl rand -hex 64)
+LAGO_RSA_PRIVATE_KEY=$(openssl genrsa 2048 2>/dev/null | base64 | tr -d '\n')
+LAGO_ENCRYPTION_PRIMARY_KEY=$(openssl rand -hex 16)
+LAGO_ENCRYPTION_DETERMINISTIC_KEY=$(openssl rand -hex 16)
+LAGO_ENCRYPTION_KEY_DERIVATION_SALT=$(openssl rand -hex 16)
+LAGO_DISABLE_SEGMENT=true
+LAGO_DISABLE_PDF_GENERATION=true
+LAGO_DISABLE_SIGNUP=true
+LAGO_CREATE_ORG=true
+LAGO_ORG_NAME=billing-poc
+LAGO_ORG_USER_EMAIL=poc@example.com
+LAGO_ORG_USER_PASSWORD=$(openssl rand -hex 12)
+LAGO_ORG_API_KEY=$(openssl rand -hex 24)
+EOF
+)
+```
+
+- ポートを変える場合は `API_PORT` と `LAGO_API_URL`、`FRONT_PORT` と `LAGO_FRONT_URL` をそろえて書き換える。
+- 組織・ユーザー・API キーは、**データベースが空の状態での初回起動時にだけ**この値で作られる。
+  起動後に `.env` を作り直すと、API キーや DB パスワードが既存データと食い違って接続できなくなる。
+  作り直すときは先に `npm run lago:reset` でデータを消すこと。
+
+### 2. 起動して実行する
 
 ```bash
 npm run lago:up
@@ -50,7 +89,6 @@ npm test
 npm run simulate
 ```
 
-- `lago/.env` はこの PoC のために乱数で生成したローカル専用の設定(API キー、ポートなど)。コミットしない。
 - ポートは既存サービスと衝突しないよう変えてある: API `3100`、画面 `8088`、Postgres `5442`、Redis `6389`。
 - 画面は http://localhost:8088 。ログインは `poc@example.com`、パスワードは `lago/.env` の `LAGO_ORG_USER_PASSWORD`。
 - PDF 生成は無効にしており、PDF 用コンテナは起動しない。
