@@ -102,6 +102,8 @@ npm run web
 
 http://localhost:4310 で開く。`lago/.env` も Lago の起動も不要で、外部には一切接続しない。
 
+![料金プラン比較画面。上段に利用量のスライダーと3プランの支払総額、中段に利用量と支払総額のグラフ、下段に Lago の実測結果の表](docs/comparison-screen.webp)
+
 - **上段**: API呼び出し数と1件あたりのトークン数をスライダーで動かすと、3プランの支払総額・内訳・最安プランと、
   利用量に対する支払総額のグラフがその場で変わる。計算は [src/pricing.ts](src/pricing.ts) をそのまま使う。
 - **下段**: `npm run simulate` が保存した [out/result.json](out/result.json)(Lago の実測結果と期待値の照合)を表示する。

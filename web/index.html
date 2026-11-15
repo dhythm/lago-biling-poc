@@ -385,7 +385,7 @@ function renderLago(data) {
   }
   const matched = results.filter((r) => r.diffs.length === 0).length;
   $("lago-sub").textContent = `実行 ${data.runId}。Lago が発行した請求書 ${results.length} 件のうち ${matched} 件が、独自計算の期待値と一致しています。`;
-  const head = ["顧客", "プラン", "請求書", "API呼び出し", "トークン", "小計", "消費税", "クレジット充当", "請求額", "支払総額", "期待値との照合"];
+  const head = ["顧客", "プラン", "請求書", "API呼び出し", "トークン", "小計", "消費税", "クレジット充当", "請求額", "支払総額", "照合"];
   const textCols = new Set([0, 1, 2, 10]);
   let prev = null;
   const rows = results.map((r) => {
