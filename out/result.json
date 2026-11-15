@@ -1,0 +1,406 @@
+{
+  "runId": "r2611151415",
+  "period": {
+    "start": "2026-10-16T00:00:00.000Z",
+    "usageEnd": "2026-11-15T00:00:00.000Z",
+    "usageDays": 30
+  },
+  "results": [
+    {
+      "profile": "light",
+      "profileName": "ライト",
+      "plan": "flat",
+      "planName": "月額固定",
+      "usage": {
+        "apiCalls": 200,
+        "tokens": 227935
+      },
+      "expected": {
+        "baseFee": 30000,
+        "fees": {
+          "apiCalls": 0,
+          "tokens": 0
+        },
+        "subtotal": 30000,
+        "tax": 3000,
+        "total": 33000,
+        "prepaidApplied": 0,
+        "amountDue": 33000,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 30000,
+        "fees": {
+          "apiCalls": 0,
+          "tokens": 0
+        },
+        "units": {
+          "apiCalls": 200,
+          "tokens": 227935
+        },
+        "subtotal": 30000,
+        "tax": 3000,
+        "total": 33000,
+        "prepaidApplied": 0,
+        "amountDue": 33000
+      },
+      "diffs": [],
+      "creditPurchase": 0,
+      "cashOut": 33000,
+      "walletRemaining": null,
+      "invoiceNumber": "BIL-F5F7-013-001"
+    },
+    {
+      "profile": "light",
+      "profileName": "ライト",
+      "plan": "payg",
+      "planName": "従量課金",
+      "usage": {
+        "apiCalls": 200,
+        "tokens": 227935
+      },
+      "expected": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 2400,
+          "tokens": 0
+        },
+        "subtotal": 2400,
+        "tax": 240,
+        "total": 2640,
+        "prepaidApplied": 0,
+        "amountDue": 2640,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 2400,
+          "tokens": 0
+        },
+        "units": {
+          "apiCalls": 200,
+          "tokens": 227935
+        },
+        "subtotal": 2400,
+        "tax": 240,
+        "total": 2640,
+        "prepaidApplied": 0,
+        "amountDue": 2640
+      },
+      "diffs": [],
+      "creditPurchase": 0,
+      "cashOut": 2640,
+      "walletRemaining": null,
+      "invoiceNumber": "BIL-F5F7-014-001"
+    },
+    {
+      "profile": "light",
+      "profileName": "ライト",
+      "plan": "prepaid",
+      "planName": "前払いクレジット",
+      "usage": {
+        "apiCalls": 200,
+        "tokens": 227935
+      },
+      "expected": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 2400,
+          "tokens": 0
+        },
+        "subtotal": 2400,
+        "tax": 240,
+        "total": 2640,
+        "prepaidApplied": 2640,
+        "amountDue": 0,
+        "walletRemaining": 19360
+      },
+      "actual": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 2400,
+          "tokens": 0
+        },
+        "units": {
+          "apiCalls": 200,
+          "tokens": 227935
+        },
+        "subtotal": 2400,
+        "tax": 240,
+        "total": 2640,
+        "prepaidApplied": 2640,
+        "amountDue": 0
+      },
+      "diffs": [],
+      "creditPurchase": 20000,
+      "cashOut": 20000,
+      "walletRemaining": 19360,
+      "invoiceNumber": "BIL-F5F7-015-002"
+    },
+    {
+      "profile": "standard",
+      "profileName": "スタンダード",
+      "plan": "flat",
+      "planName": "月額固定",
+      "usage": {
+        "apiCalls": 1500,
+        "tokens": 2395168
+      },
+      "expected": {
+        "baseFee": 30000,
+        "fees": {
+          "apiCalls": 0,
+          "tokens": 0
+        },
+        "subtotal": 30000,
+        "tax": 3000,
+        "total": 33000,
+        "prepaidApplied": 0,
+        "amountDue": 33000,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 30000,
+        "fees": {
+          "apiCalls": 0,
+          "tokens": 0
+        },
+        "units": {
+          "apiCalls": 1500,
+          "tokens": 2395168
+        },
+        "subtotal": 30000,
+        "tax": 3000,
+        "total": 33000,
+        "prepaidApplied": 0,
+        "amountDue": 33000
+      },
+      "diffs": [],
+      "creditPurchase": 0,
+      "cashOut": 33000,
+      "walletRemaining": null,
+      "invoiceNumber": "BIL-F5F7-017-001"
+    },
+    {
+      "profile": "standard",
+      "profileName": "スタンダード",
+      "plan": "payg",
+      "planName": "従量課金",
+      "usage": {
+        "apiCalls": 1500,
+        "tokens": 2395168
+      },
+      "expected": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 16000,
+          "tokens": 2280
+        },
+        "subtotal": 18280,
+        "tax": 1828,
+        "total": 20108,
+        "prepaidApplied": 0,
+        "amountDue": 20108,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 16000,
+          "tokens": 2280
+        },
+        "units": {
+          "apiCalls": 1500,
+          "tokens": 2395168
+        },
+        "subtotal": 18280,
+        "tax": 1828,
+        "total": 20108,
+        "prepaidApplied": 0,
+        "amountDue": 20108
+      },
+      "diffs": [],
+      "creditPurchase": 0,
+      "cashOut": 20108,
+      "walletRemaining": null,
+      "invoiceNumber": "BIL-F5F7-016-001"
+    },
+    {
+      "profile": "standard",
+      "profileName": "スタンダード",
+      "plan": "prepaid",
+      "planName": "前払いクレジット",
+      "usage": {
+        "apiCalls": 1500,
+        "tokens": 2395168
+      },
+      "expected": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 16000,
+          "tokens": 2280
+        },
+        "subtotal": 18280,
+        "tax": 1828,
+        "total": 20108,
+        "prepaidApplied": 20108,
+        "amountDue": 0,
+        "walletRemaining": 1892
+      },
+      "actual": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 16000,
+          "tokens": 2280
+        },
+        "units": {
+          "apiCalls": 1500,
+          "tokens": 2395168
+        },
+        "subtotal": 18280,
+        "tax": 1828,
+        "total": 20108,
+        "prepaidApplied": 20108,
+        "amountDue": 0
+      },
+      "diffs": [],
+      "creditPurchase": 20000,
+      "cashOut": 20000,
+      "walletRemaining": 1892,
+      "invoiceNumber": "BIL-F5F7-018-002"
+    },
+    {
+      "profile": "heavy",
+      "profileName": "ヘビー",
+      "plan": "flat",
+      "planName": "月額固定",
+      "usage": {
+        "apiCalls": 6001,
+        "tokens": 12050270
+      },
+      "expected": {
+        "baseFee": 30000,
+        "fees": {
+          "apiCalls": 0,
+          "tokens": 0
+        },
+        "subtotal": 30000,
+        "tax": 3000,
+        "total": 33000,
+        "prepaidApplied": 0,
+        "amountDue": 33000,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 30000,
+        "fees": {
+          "apiCalls": 0,
+          "tokens": 0
+        },
+        "units": {
+          "apiCalls": 6001,
+          "tokens": 12050270
+        },
+        "subtotal": 30000,
+        "tax": 3000,
+        "total": 33000,
+        "prepaidApplied": 0,
+        "amountDue": 33000
+      },
+      "diffs": [],
+      "creditPurchase": 0,
+      "cashOut": 33000,
+      "walletRemaining": null,
+      "invoiceNumber": "BIL-F5F7-020-001"
+    },
+    {
+      "profile": "heavy",
+      "profileName": "ヘビー",
+      "plan": "payg",
+      "planName": "従量課金",
+      "usage": {
+        "apiCalls": 6001,
+        "tokens": 12050270
+      },
+      "expected": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 45005,
+          "tokens": 13920
+        },
+        "subtotal": 58925,
+        "tax": 5893,
+        "total": 64818,
+        "prepaidApplied": 0,
+        "amountDue": 64818,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 45005,
+          "tokens": 13920
+        },
+        "units": {
+          "apiCalls": 6001,
+          "tokens": 12050270
+        },
+        "subtotal": 58925,
+        "tax": 5893,
+        "total": 64818,
+        "prepaidApplied": 0,
+        "amountDue": 64818
+      },
+      "diffs": [],
+      "creditPurchase": 0,
+      "cashOut": 64818,
+      "walletRemaining": null,
+      "invoiceNumber": "BIL-F5F7-019-001"
+    },
+    {
+      "profile": "heavy",
+      "profileName": "ヘビー",
+      "plan": "prepaid",
+      "planName": "前払いクレジット",
+      "usage": {
+        "apiCalls": 6001,
+        "tokens": 12050270
+      },
+      "expected": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 45005,
+          "tokens": 13920
+        },
+        "subtotal": 58925,
+        "tax": 5893,
+        "total": 64818,
+        "prepaidApplied": 22000,
+        "amountDue": 42818,
+        "walletRemaining": 0
+      },
+      "actual": {
+        "baseFee": 0,
+        "fees": {
+          "apiCalls": 45005,
+          "tokens": 13920
+        },
+        "units": {
+          "apiCalls": 6001,
+          "tokens": 12050270
+        },
+        "subtotal": 58925,
+        "tax": 5893,
+        "total": 64818,
+        "prepaidApplied": 22000,
+        "amountDue": 42818
+      },
+      "diffs": [],
+      "creditPurchase": 20000,
+      "cashOut": 62818,
+      "walletRemaining": 0,
+      "invoiceNumber": "BIL-F5F7-021-002"
+    }
+  ]
+}
